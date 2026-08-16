@@ -66,7 +66,9 @@ export function BuyerOffer() {
         <FadeIn className="mt-14">
           <CtaButton
             variant="light"
-            onClick={() => openLeadCapture({ intent: "offer" })}
+            onClick={() =>
+              openLeadCapture({ intent: "offer", source: "buyer-section" })
+            }
           >
             I found a home
           </CtaButton>

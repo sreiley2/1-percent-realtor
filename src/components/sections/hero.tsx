@@ -44,13 +44,17 @@ export function Hero() {
             <div className="mt-10 flex flex-col gap-3 sm:flex-row">
               <CtaButton
                 variant="light"
-                onClick={() => openLeadCapture({ intent: "sell" })}
+                onClick={() =>
+                  openLeadCapture({ intent: "sell", source: "hero-sell" })
+                }
               >
                 Sell my home
               </CtaButton>
               <CtaButton
                 variant="outlineLight"
-                onClick={() => openLeadCapture({ intent: "offer" })}
+                onClick={() =>
+                  openLeadCapture({ intent: "offer", source: "hero-buy" })
+                }
               >
                 I found a home
               </CtaButton>

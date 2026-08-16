@@ -69,7 +69,9 @@ export function SiteHeader() {
           <CtaButton
             variant={scrolled ? "primary" : "light"}
             className="h-10 px-4 tracking-[0.16em] lg:h-12 lg:px-7"
-            onClick={() => openLeadCapture({ intent: "choice" })}
+            onClick={() =>
+              openLeadCapture({ intent: "choice", source: "header-get-started" })
+            }
           >
             Get started
           </CtaButton>
@@ -117,7 +119,12 @@ export function SiteHeader() {
             <div className="px-6 pb-8">
               <CtaButton
                 className="w-full"
-                onClick={() => openLeadCapture({ intent: "choice" })}
+                onClick={() =>
+                  openLeadCapture({
+                    intent: "choice",
+                    source: "header-get-started-mobile",
+                  })
+                }
               >
                 Get started
               </CtaButton>

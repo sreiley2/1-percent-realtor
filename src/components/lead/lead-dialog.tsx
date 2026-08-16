@@ -11,7 +11,7 @@ import { LeadForm } from "@/components/lead/lead-form";
 import { useLeadCapture } from "@/components/lead/lead-provider";
 
 export function LeadDialog() {
-  const { open, intent, estimatedValue, closeLeadCapture, openLeadCapture } =
+  const { open, intent, estimatedValue, source, closeLeadCapture, openLeadCapture } =
     useLeadCapture();
   const isChoice = intent === "choice";
 
@@ -53,8 +53,10 @@ export function LeadDialog() {
           </div>
         ) : (
           <LeadForm
+            key={`${intent}-${open ? "open" : "closed"}`}
             intent={intent}
             estimatedValue={estimatedValue}
+            source={source}
             onBack={() => openLeadCapture({ intent: "choice", estimatedValue })}
           />
         )}

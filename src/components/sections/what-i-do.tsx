@@ -31,7 +31,9 @@ export function WhatIDo() {
               </p>
               <CtaButton
                 className="mt-10 w-full sm:w-auto"
-                onClick={() => openLeadCapture({ intent: "sell" })}
+                onClick={() =>
+                  openLeadCapture({ intent: "sell", source: "services-sell" })
+                }
               >
                 Sell my home
               </CtaButton>
@@ -51,7 +53,9 @@ export function WhatIDo() {
               </p>
               <CtaButton
                 className="mt-10 w-full sm:w-auto"
-                onClick={() => openLeadCapture({ intent: "offer" })}
+                onClick={() =>
+                  openLeadCapture({ intent: "offer", source: "services-buy" })
+                }
               >
                 I found a home
               </CtaButton>

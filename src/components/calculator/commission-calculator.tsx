@@ -137,6 +137,7 @@ export function CommissionCalculator() {
               openLeadCapture({
                 intent: "sell",
                 estimatedValue: homeValue,
+                source: "calculator",
               })
             }
           >

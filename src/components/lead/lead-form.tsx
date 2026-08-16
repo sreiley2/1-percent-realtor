@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,18 +12,81 @@ import type { LeadIntent } from "@/components/lead/lead-provider";
 export function LeadForm({
   intent,
   estimatedValue,
+  source,
   onBack,
 }: {
   intent: Exclude<LeadIntent, "choice">;
   estimatedValue?: number;
+  source?: string;
   onBack?: () => void;
 }) {
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [formStartedAt, setFormStartedAt] = useState(0);
+  const inFlightRef = useRef(false);
   const isBuyer = intent === "offer";
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  useEffect(() => {
+    setFormStartedAt(Date.now());
+    setSubmitted(false);
+    setSubmitting(false);
+    setError(null);
+  }, [intent]);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setSubmitted(true);
+    if (submitting || inFlightRef.current) return;
+    inFlightRef.current = true;
+
+    const form = event.currentTarget;
+    const data = new FormData(form);
+
+    setSubmitting(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          intent: data.get("intent"),
+          name: data.get("name"),
+          email: data.get("email"),
+          phone: data.get("phone"),
+          address: data.get("address"),
+          listingUrl: data.get("listing-url"),
+          timeline: data.get("timeline"),
+          offerDeadline: data.get("offer-deadline"),
+          message: data.get("message"),
+          estimatedValue: data.get("estimatedValue") || undefined,
+          source: data.get("source") || undefined,
+          website: data.get("website"),
+          formStartedAt: Number(data.get("formStartedAt")),
+        }),
+      });
+
+      const result = (await response.json().catch(() => null)) as
+        | { error?: string }
+        | null;
+
+      if (!response.ok) {
+        throw new Error(
+          result?.error || "Something went wrong. Please try again."
+        );
+      }
+
+      setSubmitted(true);
+    } catch (caught) {
+      setError(
+        caught instanceof Error
+          ? caught.message
+          : "Something went wrong. Please try again."
+      );
+    } finally {
+      inFlightRef.current = false;
+      setSubmitting(false);
+    }
   }
 
   if (submitted) {
@@ -40,7 +103,7 @@ export function LeadForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-5" aria-busy={submitting}>
       <div>
         <p className="eyebrow text-gold">{isBuyer ? "Buy" : "Sell"}</p>
         <h3 className="display-title mt-3 text-3xl sm:text-4xl">
@@ -141,15 +204,38 @@ export function LeadForm({
         />
       </div>
 
+      <div className="absolute -left-[9999px] h-px w-px overflow-hidden" aria-hidden="true">
+        <label htmlFor="website">Website</label>
+        <input
+          id="website"
+          name="website"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+        />
+      </div>
       <input type="hidden" name="intent" value={intent} />
-      <CtaButton type="submit" className="w-full sm:w-auto">
-        Submit request
+      <input type="hidden" name="formStartedAt" value={String(formStartedAt)} />
+      {source ? <input type="hidden" name="source" value={source} /> : null}
+      {estimatedValue ? (
+        <input type="hidden" name="estimatedValue" value={String(estimatedValue)} />
+      ) : null}
+
+      {error ? (
+        <p role="alert" className="text-sm leading-6 text-red-800">
+          {error}
+        </p>
+      ) : null}
+
+      <CtaButton type="submit" className="w-full sm:w-auto" disabled={submitting}>
+        {submitting ? "Submitting…" : "Submit request"}
       </CtaButton>
       {onBack ? (
         <button
           type="button"
           onClick={onBack}
-          className="ml-0 block text-[11px] tracking-[0.18em] text-muted-foreground uppercase hover:text-foreground sm:ml-4 sm:inline"
+          disabled={submitting}
+          className="ml-0 block text-[11px] tracking-[0.18em] text-muted-foreground uppercase hover:text-foreground disabled:opacity-50 sm:ml-4 sm:inline"
         >
           Choose a different option
         </button>

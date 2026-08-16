@@ -217,6 +217,11 @@ export const faqGroups = [
     title: "General",
     items: [
       {
+        question: "Who is the agent?",
+        answer:
+          "Steven C. Reiley, CA DRE #02130614, affiliated with Ashby & Graff Real Estate. 1% Realtor is the consumer-facing brand for this practice — not a separate brokerage.",
+      },
+      {
         question: "Do I have to sign an agreement?",
         answer:
           "Yes, when representation begins. Required listing or buyer representation agreements and disclosures will be provided as applicable. Submitting a form on this site does not create an agreement.",

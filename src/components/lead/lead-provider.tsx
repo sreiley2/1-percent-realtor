@@ -11,14 +11,18 @@ import {
 
 export type LeadIntent = "choice" | "sell" | "offer";
 
+type LeadCaptureOptions = {
+  intent?: LeadIntent;
+  estimatedValue?: number;
+  source?: string;
+};
+
 type LeadContextValue = {
   open: boolean;
   intent: LeadIntent;
   estimatedValue?: number;
-  openLeadCapture: (options?: {
-    intent?: LeadIntent;
-    estimatedValue?: number;
-  }) => void;
+  source?: string;
+  openLeadCapture: (options?: LeadCaptureOptions) => void;
   closeLeadCapture: () => void;
 };
 
@@ -28,27 +32,30 @@ export function LeadProvider({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const [intent, setIntent] = useState<LeadIntent>("choice");
   const [estimatedValue, setEstimatedValue] = useState<number | undefined>();
+  const [source, setSource] = useState<string | undefined>();
 
-  const openLeadCapture = useCallback(
-    (options?: { intent?: LeadIntent; estimatedValue?: number }) => {
-      setIntent(options?.intent ?? "choice");
-      setEstimatedValue(options?.estimatedValue);
-      setOpen(true);
-    },
-    []
-  );
+  const openLeadCapture = useCallback((options?: LeadCaptureOptions) => {
+    setIntent(options?.intent ?? "choice");
+    setEstimatedValue(options?.estimatedValue);
+    if (options?.source) setSource(options.source);
+    setOpen(true);
+  }, []);
 
-  const closeLeadCapture = useCallback(() => setOpen(false), []);
+  const closeLeadCapture = useCallback(() => {
+    setOpen(false);
+    setSource(undefined);
+  }, []);
 
   const value = useMemo(
     () => ({
       open,
       intent,
       estimatedValue,
+      source,
       openLeadCapture,
       closeLeadCapture,
     }),
-    [open, intent, estimatedValue, openLeadCapture, closeLeadCapture]
+    [open, intent, estimatedValue, source, openLeadCapture, closeLeadCapture]
   );
 
   return <LeadContext.Provider value={value}>{children}</LeadContext.Provider>;

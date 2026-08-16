@@ -62,7 +62,7 @@ export function About() {
               <p className="text-[11px] tracking-[0.18em] text-muted-foreground uppercase">
                 Affiliated with
               </p>
-              <div className="mt-3 w-[4.75rem]">
+              <div className="mt-3 w-20">
                 <BrokerageMark className="w-full" />
               </div>
             </div>

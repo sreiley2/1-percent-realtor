@@ -22,10 +22,6 @@ export default function Terms() {
         only after the required agreements and disclosures are signed.
       </p>
       <p>{legal.footer}</p>
-      <p>
-        Advertising language, commission claims, buyer compensation language,
-        and required disclosures are subject to brokerage review.
-      </p>
     </LegalPage>
   );
 }

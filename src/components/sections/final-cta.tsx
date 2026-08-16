@@ -23,13 +23,17 @@ export function FinalCta() {
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
             <CtaButton
               variant="light"
-              onClick={() => openLeadCapture({ intent: "sell" })}
+              onClick={() =>
+                openLeadCapture({ intent: "sell", source: "final-cta-sell" })
+              }
             >
               Sell my home
             </CtaButton>
             <CtaButton
               variant="outlineLight"
-              onClick={() => openLeadCapture({ intent: "offer" })}
+              onClick={() =>
+                openLeadCapture({ intent: "offer", source: "final-cta-buy" })
+              }
             >
               I found a home
             </CtaButton>

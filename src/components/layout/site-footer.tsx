@@ -33,7 +33,7 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-14 grid gap-10 border-t border-white/10 pt-10 md:grid-cols-[auto_1fr] md:items-start md:gap-16">
-          <BrokerageMark className="w-[5.5rem] sm:w-24" />
+          <BrokerageMark />
           <div className="max-w-md">
             <p className="font-display text-2xl">{site.agent.name}</p>
             <p className="mt-2 text-sm text-cream/70">{site.agent.dreNumber}</p>

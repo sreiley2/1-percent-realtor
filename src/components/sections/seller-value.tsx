@@ -48,7 +48,9 @@ export function SellerValue() {
         <FadeIn className="mt-12 flex flex-col gap-3 sm:flex-row">
           <CtaButton
             variant="light"
-            onClick={() => openLeadCapture({ intent: "sell" })}
+            onClick={() =>
+              openLeadCapture({ intent: "sell", source: "seller-section" })
+            }
           >
             Sell my home
           </CtaButton>
