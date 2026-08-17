@@ -55,6 +55,7 @@ export async function POST(request: Request) {
   const data = parsed.data;
 
   if (isSpam(data.website, data.formStartedAt)) {
+    console.log("Lead submission treated as spam; skipping store and email");
     return NextResponse.json({ ok: true });
   }
 
@@ -106,10 +107,15 @@ export async function POST(request: Request) {
     );
   }
 
+  console.log("Lead stored; sending email notification", { leadId: lead.id });
+
   try {
     await sendLeadNotification(lead);
   } catch (error) {
-    console.error("Lead stored but email notification failed", error, lead.id);
+    console.error("Lead stored but email notification failed", {
+      leadId: lead.id,
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
     return NextResponse.json(
       {
         error:
@@ -118,6 +124,8 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
+
+  console.log("Lead email notification succeeded", { leadId: lead.id });
 
   return NextResponse.json({ ok: true, id: lead.id });
 }

@@ -102,22 +102,71 @@ export function leadNotificationHtml(lead: StoredLead) {
 }
 
 export async function sendLeadNotification(lead: StoredLead) {
-  const resend = new Resend(requiredEnv("RESEND_API_KEY"));
+  const apiKey = requiredEnv("RESEND_API_KEY");
   const to = requiredEnv("LEAD_NOTIFY_EMAIL");
-  const from =
-    process.env.LEAD_FROM_EMAIL ?? "1% Realtor Leads <beth.t@example.com>";
+  const from = "onboarding@resend.dev";
   const type = leadTypeLabel(lead.intent);
+  const subject = `${type} lead: ${lead.name}`;
 
-  const { error } = await resend.emails.send({
+  console.log("Lead email: attempting send", {
+    leadId: lead.id,
+    to,
+    from,
+    hasResendApiKey: Boolean(apiKey),
+    notifyEmailConfigured: Boolean(to),
+  });
+
+  const resend = new Resend(apiKey);
+  const response = await resend.emails.send({
     from,
     to,
     replyTo: lead.email,
-    subject: `${type} lead: ${lead.name}`,
+    subject,
     text: leadNotificationText(lead),
     html: leadNotificationHtml(lead),
   });
 
-  if (error) {
-    throw new Error(error.message);
+  console.log("Lead email: Resend response", {
+    leadId: lead.id,
+    to,
+    from,
+    emailId: response.data?.id ?? null,
+    error: resendErrorLog(response.error),
+  });
+
+  if (response.error || !response.data?.id) {
+    throw new Error(resendErrorMessage(response.error));
   }
+}
+
+function resendErrorMessage(error: unknown) {
+  if (!error) return "Resend did not return an email id.";
+  if (typeof error === "string") return error;
+  if (typeof error === "object") {
+    const record = error as Record<string, unknown>;
+    if (typeof record.message === "string" && record.message) return record.message;
+    const nested = record.error;
+    if (nested && typeof nested === "object") {
+      const nestedRecord = nested as Record<string, unknown>;
+      if (typeof nestedRecord.message === "string" && nestedRecord.message) {
+        return nestedRecord.message;
+      }
+    }
+  }
+  return "Resend request failed.";
+}
+
+function resendErrorLog(error: unknown) {
+  if (!error) return null;
+  if (typeof error === "string") return { message: error };
+  if (typeof error === "object") {
+    const record = error as Record<string, unknown>;
+    return {
+      name: typeof record.name === "string" ? record.name : undefined,
+      statusCode:
+        typeof record.statusCode === "number" ? record.statusCode : undefined,
+      message: resendErrorMessage(error),
+    };
+  }
+  return { message: "Unknown Resend error" };
 }
