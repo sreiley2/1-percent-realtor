@@ -110,7 +110,6 @@ export async function sendLeadNotification(lead: StoredLead) {
 
   console.log("Lead email: attempting send", {
     leadId: lead.id,
-    to,
     from,
     hasResendApiKey: Boolean(apiKey),
     notifyEmailConfigured: Boolean(to),
@@ -128,7 +127,6 @@ export async function sendLeadNotification(lead: StoredLead) {
 
   console.log("Lead email: Resend response", {
     leadId: lead.id,
-    to,
     from,
     emailId: response.data?.id ?? null,
     error: resendErrorLog(response.error),

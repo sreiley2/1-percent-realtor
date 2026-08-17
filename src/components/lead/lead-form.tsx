@@ -24,6 +24,8 @@ export function LeadForm({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formStartedAt, setFormStartedAt] = useState(0);
+  const [savedLeadId, setSavedLeadId] = useState<string | null>(null);
+  const [notificationFailed, setNotificationFailed] = useState(false);
   const inFlightRef = useRef(false);
   const isBuyer = intent === "offer";
 
@@ -32,6 +34,8 @@ export function LeadForm({
     setSubmitted(false);
     setSubmitting(false);
     setError(null);
+    setSavedLeadId(null);
+    setNotificationFailed(false);
   }, [intent]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -63,19 +67,25 @@ export function LeadForm({
           source: data.get("source") || undefined,
           website: data.get("website"),
           formStartedAt: Number(data.get("formStartedAt")),
+          leadId: savedLeadId || undefined,
         }),
       });
 
-      const result = (await response.json().catch(() => null)) as
-        | { error?: string }
-        | null;
+      const result = (await response.json().catch(() => null)) as {
+        error?: string;
+        id?: string;
+        saved?: boolean;
+        notification?: "sent" | "failed";
+      } | null;
 
-      if (!response.ok) {
+      if (!response.ok || !result?.id || result.saved === false) {
         throw new Error(
           result?.error || "Something went wrong. Please try again."
         );
       }
 
+      setSavedLeadId(result.id);
+      setNotificationFailed(result.notification === "failed");
       setSubmitted(true);
     } catch (caught) {
       setError(
@@ -95,15 +105,16 @@ export function LeadForm({
         <p className="eyebrow text-gold">Received</p>
         <h3 className="display-title mt-4 text-3xl">Thank you.</h3>
         <p className="mx-auto mt-4 max-w-md text-sm leading-6 text-muted-foreground">
-          Your request is in. A follow-up will cover next steps. Submitting this
-          form does not create a representation agreement.
+          {notificationFailed
+            ? "Your request is saved. An automatic notification could not be sent, so follow-up may be delayed. If you do not hear back, contact Ashby & Graff Real Estate and mention that you submitted this form."
+            : "Your request is in. A follow-up will cover next steps. Submitting this form does not create a representation agreement."}
         </p>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5" aria-busy={submitting}>
+    <form onSubmit={handleSubmit} className="relative space-y-5" aria-busy={submitting}>
       <div>
         <p className="eyebrow text-gold">{isBuyer ? "Buy" : "Sell"}</p>
         <h3 className="display-title mt-3 text-3xl sm:text-4xl">
@@ -204,14 +215,18 @@ export function LeadForm({
         />
       </div>
 
-      <div className="absolute -left-[9999px] h-px w-px overflow-hidden" aria-hidden="true">
-        <label htmlFor="website">Website</label>
+      <div
+        inert
+        aria-hidden="true"
+        className="pointer-events-none absolute -left-[10000px] top-0 h-0 w-0 overflow-hidden opacity-0"
+      >
         <input
-          id="website"
           name="website"
           type="text"
           tabIndex={-1}
           autoComplete="off"
+          defaultValue=""
+          aria-hidden="true"
         />
       </div>
       <input type="hidden" name="intent" value={intent} />

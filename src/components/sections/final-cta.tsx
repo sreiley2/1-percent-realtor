@@ -4,6 +4,7 @@ import { Container } from "@/components/shared/container";
 import { CtaButton } from "@/components/shared/cta-button";
 import { FadeIn } from "@/components/shared/fade-in";
 import { useLeadCapture } from "@/components/lead/lead-provider";
+import { site } from "@/lib/site-content";
 
 export function FinalCta() {
   const { openLeadCapture } = useLeadCapture();
@@ -19,6 +20,15 @@ export function FinalCta() {
           <p className="mt-8 max-w-xl text-base leading-8 text-cream/70">
             Sell your home for 1%, or bring a property you&apos;ve already found.
             Both start with a conversation — not an agreement.
+          </p>
+          <p className="mt-6 text-sm text-cream/70">
+            Phone{" "}
+            <a
+              href={`tel:${site.agent.phone}`}
+              className="transition-colors hover:text-cream"
+            >
+              {site.agent.phone}
+            </a>
           </p>
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
             <CtaButton

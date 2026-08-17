@@ -1,5 +1,6 @@
 export const site = {
   name: "1% Realtor",
+  url: "https://bay101realty.com",
   tagline: "I list. I write offers. I get deals done.",
   region: "San Francisco Bay Area",
   listingRate: "1%",
@@ -7,7 +8,7 @@ export const site = {
   agent: {
     name: "Steven C. Reiley",
     dreNumber: "CA DRE #02130614",
-    experience: "5+ years experience",
+    phone: "415-992-2084",
     areas: "Bay Area",
   },
   brokerage: {

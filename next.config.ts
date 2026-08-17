@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 
+const homepageSections = ["buy", "sell", "about", "faq", "contact"] as const;
+
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
@@ -9,6 +11,13 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
     ],
+  },
+  async redirects() {
+    return homepageSections.map((section) => ({
+      source: `/${section}`,
+      destination: `/#${section}`,
+      permanent: true,
+    }));
   },
 };
 

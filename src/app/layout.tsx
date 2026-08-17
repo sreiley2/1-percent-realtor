@@ -4,6 +4,7 @@ import { LeadDialog } from "@/components/lead/lead-dialog";
 import { LeadProvider } from "@/components/lead/lead-provider";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { site } from "@/lib/site-content";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -20,10 +21,14 @@ const display = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(site.url),
   title: "1% Realtor | Sell for 1% · 1% Buyer Representation",
   description:
     "Bay Area real estate for sellers and buyers. Sell your home for 1%, or hire 1% buyer representation if you've already found the property.",
   applicationName: "1% Realtor",
+  alternates: {
+    canonical: "/",
+  },
   icons: {
     icon: [
       { url: "/brand/favicon-16.png", sizes: "16x16", type: "image/png" },
@@ -43,6 +48,9 @@ export const metadata: Metadata = {
   },
   manifest: "/site.webmanifest",
   openGraph: {
+    type: "website",
+    url: "/",
+    siteName: site.name,
     title: "1% Realtor | Sell for 1% · 1% Buyer Representation",
     description:
       "Bay Area real estate for sellers and buyers. Sell your home for 1%, or hire 1% buyer representation if you've already found the property.",
@@ -54,6 +62,13 @@ export const metadata: Metadata = {
         alt: "1% Realtor",
       },
     ],
+  },
+  twitter: {
+    card: "summary",
+    title: "1% Realtor | Sell for 1% · 1% Buyer Representation",
+    description:
+      "Bay Area real estate for sellers and buyers. Sell your home for 1%, or hire 1% buyer representation if you've already found the property.",
+    images: ["/brand/logo-512.png"],
   },
 };
 

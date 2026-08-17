@@ -38,6 +38,15 @@ export function SiteFooter() {
             <p className="font-display text-2xl">{site.agent.name}</p>
             <p className="mt-2 text-sm text-cream/70">{site.agent.dreNumber}</p>
             <p className="mt-1 text-sm text-cream/70">{site.brokerage.name}</p>
+            <p className="mt-1 text-sm text-cream/70">
+              Phone{" "}
+              <a
+                href={`tel:${site.agent.phone}`}
+                className="transition-colors hover:text-cream"
+              >
+                {site.agent.phone}
+              </a>
+            </p>
             <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-[11px] tracking-[0.16em] uppercase">
               <li>
                 <Link href="/privacy" className="text-cream/60 transition-colors hover:text-cream">

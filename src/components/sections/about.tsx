@@ -7,7 +7,6 @@ import { site } from "@/lib/site-content";
 const credentials = [
   site.agent.name,
   site.agent.dreNumber,
-  site.agent.experience,
   site.agent.areas,
 ] as const;
 
@@ -20,7 +19,7 @@ export function About() {
             <div className="mx-auto w-full max-w-[14rem] lg:mx-0">
               <Image
                 src="/brand/logo.png"
-                alt=""
+                alt="1% Realtor"
                 width={512}
                 height={512}
                 quality={100}
@@ -56,6 +55,12 @@ export function About() {
                   {item}
                 </li>
               ))}
+              <li className="text-sm leading-6">
+                Phone{" "}
+                <a href={`tel:${site.agent.phone}`} className="hover:text-foreground">
+                  {site.agent.phone}
+                </a>
+              </li>
             </ul>
 
             <div className="mt-8">

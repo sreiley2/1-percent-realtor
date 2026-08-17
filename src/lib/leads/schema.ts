@@ -46,6 +46,11 @@ const sharedFields = {
   website: z.preprocess((value) => {
     return typeof value === "string" ? value : "";
   }, z.string().max(200).optional()),
+  leadId: z.preprocess((value) => {
+    if (typeof value !== "string") return undefined;
+    const trimmed = value.trim();
+    return trimmed === "" ? undefined : trimmed;
+  }, z.uuid().optional()),
   formStartedAt: z.coerce
     .number()
     .int("Invalid submission.")

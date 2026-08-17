@@ -38,6 +38,92 @@ async function ensureTable() {
   tableReady = true;
 }
 
+type LeadRow = {
+  id: string;
+  created_at: string | Date;
+  status: string;
+  intent: string;
+  name: string;
+  email: string;
+  phone: string;
+  address: string | null;
+  listing_url: string | null;
+  timeline: string | null;
+  offer_deadline: string | null;
+  message: string | null;
+  estimated_value: string | number | null;
+  source: string | null;
+  user_agent: string | null;
+};
+
+function optionalText(value: string | null | undefined) {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : undefined;
+}
+
+function mapLeadRow(row: LeadRow): StoredLead | null {
+  if (row.intent !== "sell" && row.intent !== "offer") return null;
+
+  const estimated =
+    row.estimated_value === null || row.estimated_value === undefined
+      ? undefined
+      : Number(row.estimated_value);
+
+  return {
+    id: row.id,
+    createdAt:
+      row.created_at instanceof Date
+        ? row.created_at.toISOString()
+        : row.created_at,
+    status: "new",
+    intent: row.intent,
+    name: row.name,
+    email: row.email,
+    phone: row.phone,
+    address: optionalText(row.address),
+    listingUrl: optionalText(row.listing_url),
+    timeline: optionalText(row.timeline),
+    offerDeadline: optionalText(row.offer_deadline),
+    message: optionalText(row.message),
+    estimatedValue:
+      estimated !== undefined && Number.isFinite(estimated)
+        ? Math.round(estimated)
+        : undefined,
+    source: optionalText(row.source),
+    userAgent: optionalText(row.user_agent),
+  };
+}
+
+export async function getLeadById(id: string): Promise<StoredLead | null> {
+  await ensureTable();
+  const sql = getSql();
+  const rows = (await sql`
+    SELECT
+      id,
+      created_at,
+      status,
+      intent,
+      name,
+      email,
+      phone,
+      address,
+      listing_url,
+      timeline,
+      offer_deadline,
+      message,
+      estimated_value,
+      source,
+      user_agent
+    FROM leads
+    WHERE id = ${id}
+    LIMIT 1
+  `) as LeadRow[];
+
+  const row = rows[0];
+  if (!row) return null;
+  return mapLeadRow(row);
+}
+
 export async function saveLead(lead: StoredLead) {
   await ensureTable();
   const sql = getSql();
